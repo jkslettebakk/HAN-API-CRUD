@@ -21,33 +21,24 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
 app.MapGet("/api/HANData", async (DataContext data) =>
 {
     /*
-    await data.HANData
-                    .Include(p => p.activePowerQ1Q4)
-                    .Include(p => p.activePowerQ2Q3)
-                    .Include(p => p.reactivePowerQ1Q2)
-                    .Include(p => p.reactivePowerQ3Q4)
-                    .Include(p => p.ampereIL1)
-                    .Include(p => p.ampereIL3)
-                    .Include(p => p.voltUL1)
-                    .Include(p => p.voltUL2)
-                    .Include(p => p.voltUL3)
-                    .ToListAsync();
-    */
-    // await data.HANData.ToListAsync();
-    await data.HANData.FindAsync();
-    if ( data.HANData.Count() > 0 )
-    {
-        return Task.FromResult(data.HANData);
-    }
-    else
-    {
-        return null;
-    }
+     return await data.HANData
+                        .Include(p => p.activePowerQ1Q4)
+                        .Include(p => p.activePowerQ2Q3)
+                        .Include(p => p.reactivePowerQ1Q2)
+                        .Include(p => p.reactivePowerQ3Q4)
+                        .Include(p => p.ampereIL1)
+                        .Include(p => p.ampereIL3)
+                        .Include(p => p.voltUL1)
+                        .Include(p => p.voltUL2)
+                        .Include(p => p.voltUL3)
+                        .ToListAsync(); */
+    return await data.HANData.ToArrayAsync();
 });
-/*
+
 app.MapGet("/api/HANData/{id}", async (DataContext data, Guid id) =>
 {
     return await data.HANData.FindAsync(id);
@@ -60,19 +51,18 @@ app.MapPost("/api/HANData", async (DataContext data, HANDataClasses hanDataSet) 
     int res = await data.SaveChangesAsync();
     Console.WriteLine("SaveChangesAsync result = {0}",res);
     Results.Accepted();
-    // return await data.HANData.ToListAsync();
     return hanDataSet;
 });
 
 app.MapDelete("/api/HANData/Delete/{id}", async (DataContext data, Guid id) =>
 {
-    var deleteData = await data.HANData.FindAsync(id);
-    
-    if (deleteData is null) return Results.NotFound();
-
-    return Results.Ok();
-
+    if ( await data.HANData.FindAsync(id) is HANDataClasses hanDataSet)
+    {
+        data.HANData.Remove(hanDataSet);
+        await data.SaveChangesAsync();
+        return Results.Ok(hanDataSet);
+    }
+    return Results.NotFound();
 });
-*/
 
 app.Run();
