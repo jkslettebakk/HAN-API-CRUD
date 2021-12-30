@@ -1,4 +1,7 @@
 
+
+foreach (string a in args)
+    Console.WriteLine("a={0}", a);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -24,19 +27,19 @@ app.UseHttpsRedirection();
 
 app.MapGet("/api/HANData", async (DataContext data) =>
 {
-    /*
-     return await data.HANData
-                        .Include(p => p.activePowerQ1Q4)
-                        .Include(p => p.activePowerQ2Q3)
-                        .Include(p => p.reactivePowerQ1Q2)
-                        .Include(p => p.reactivePowerQ3Q4)
-                        .Include(p => p.ampereIL1)
-                        .Include(p => p.ampereIL3)
-                        .Include(p => p.voltUL1)
-                        .Include(p => p.voltUL2)
-                        .Include(p => p.voltUL3)
-                        .ToListAsync(); */
-    return await data.HANData.ToArrayAsync();
+     var resultList = await data.HANData
+                            .Include(x => x.ActivePowerQ1Q4)
+                            .Include(x => x.ActivePowerQ2Q3)
+                            .Include(x => x.ReactivePowerQ1Q2)
+                            .Include(x => x.ReactivePowerQ3Q4)
+                            .Include(x => x.AmpereIL1)
+                            .Include(x => x.AmpereIL3)
+                            .Include(x => x.VoltUL1)
+                            .Include(x => x.VoltUL2)
+                            .Include(x => x.VoltUL3)
+                            .ToListAsync();
+    return resultList;
+    //return await data.HANData.ToArrayAsync();
 });
 
 app.MapGet("/api/HANData/{id}", async (DataContext data, Guid id) =>
@@ -44,23 +47,27 @@ app.MapGet("/api/HANData/{id}", async (DataContext data, Guid id) =>
     return await data.HANData.FindAsync(id);
 });
 
-app.MapPost("/api/HANData", async (DataContext data, HANDataClasses hanDataSet) =>
+app.MapPost("/api/HANData", async (DataContext data, HANData hanDataSet) =>
 {
     var dataAdd = await data.HANData.AddAsync(hanDataSet);
-    Console.WriteLine("adding data to database:{0}\n", dataAdd);
+    Console.WriteLine(dataAdd);
     int res = await data.SaveChangesAsync();
-    Console.WriteLine("SaveChangesAsync result = {0}",res);
     Results.Accepted();
     return hanDataSet;
 });
 
 app.MapDelete("/api/HANData/Delete/{id}", async (DataContext data, Guid id) =>
 {
-    if ( await data.HANData.FindAsync(id) is HANDataClasses hanDataSet)
+    var RemoveData = await data.HANData.FindAsync(id);
+
+    if ( RemoveData is HANData hanDataSet)
     {
-        data.HANData.Remove(hanDataSet);
-        await data.SaveChangesAsync();
-        return Results.Ok(hanDataSet);
+        // var ActivePowerQ1Q4Objectid = RemoveData.ActivePowerQ1Q4.Id;
+        // var ActivePowerQ1Q4ObjectidRemove = await data.ActivePowerQ1Q4.FindAsync(ActivePowerQ1Q4Objectid);
+
+        data.HANData.Remove(RemoveData);
+        data.SaveChanges();
+        return Results.Ok(RemoveData);
     }
     return Results.NotFound();
 });

@@ -1,151 +1,143 @@
 ﻿
+
 namespace HAN_API_CRUD.Data
 {
-    public class HANDataClasses
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; } = new Guid();
-        [Required]
-        public string dateTimePoll { get; set; } = null!;
-        [Required]
-        public string versionIdentifier { get; set; } = null!;
-        [Required]
-        public string modelID { get; set; } = null!;
-        [Required]
-        public string modelType { get; set; } = null!;
-        [Required]
-        public activePowerQ1Q4Object activePowerQ1Q4Objects { get; set; }
-        [Required]
-        public activePowerQ2Q3Object activePowerQ2Q3Objects { get; set; }
-        [Required]
-        public reactivePowerQ1Q2Object reactivePowerQ1Q2Object { get; set; }
-        [Required]
-        public reactivePowerQ3Q4Object reactivePowerQ3Q4Object { get; set; }
-        [Required]
-        public ampereIL1Object ampereIL1Object { get; set; }
-        [Required]
-        public ampereIL3Object ampereIL3Object { get; set; }
-        [Required]
-        public voltUL1Object voltUL1Object { get; set; }
-        [Required]
-        public voltUL2Object voltUL2Object { get; set; }
-        [Required]
-        public voltUL3Object voltUL3Object { get; set; } 
-    }
-    public class activePowerQ1Q4Object
+    public class HANData
     {
         [Key]
         [Required]
         public Guid HANId { get; set; }
         [Required]
-        public HANDataClasses HANDataClasses { get; set; }
+        public string DateTimePoll { get; set; } = null!;
         [Required]
-        public double activePowerQ1Q4 { get; set; }
+        public string VersionIdentifier { get; set; } = null!;
+        [Required]
+        public string ModelID { get; set; } = null!;
+        [Required]
+        public string ModelType { get; set; } = null!;
+        [Required]
+        public virtual ActivePowerQ1Q4Object ActivePowerQ1Q4 { get; set; } = new ActivePowerQ1Q4Object();
+        [Required]
+        public virtual ActivePowerQ2Q3Object ActivePowerQ2Q3 { get; set; } = new ActivePowerQ2Q3Object();
+        [Required]
+        public virtual ReactivePowerQ1Q2Object ReactivePowerQ1Q2 { get; set; } = new ReactivePowerQ1Q2Object();
+        [Required]
+        public virtual ReactivePowerQ3Q4Object ReactivePowerQ3Q4 { get; set; } = new ReactivePowerQ3Q4Object();
+        [Required]
+        public virtual AmpereIL1Object AmpereIL1 { get; set; } = new AmpereIL1Object();
+        [Required]
+        public virtual AmpereIL3Object AmpereIL3 { get; set; } = new AmpereIL3Object();
+        [Required]
+        public virtual VoltUL1Object VoltUL1 { get; set; } = new VoltUL1Object();
+        [Required]
+        public virtual VoltUL2Object VoltUL2 { get; set; } = new VoltUL2Object();
+        [Required]
+        public virtual VoltUL3Object VoltUL3 { get; set; } = new VoltUL3Object();
+    }
+    public class ActivePowerQ1Q4Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        public double ActivePowerQ1Q4 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class ActivePowerQ2Q3Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public double ActivePowerQ2Q3 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class ReactivePowerQ1Q2Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public double ReactivePowerQ1Q2 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class ReactivePowerQ3Q4Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public double ReactivePowerQ3Q4 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class AmpereIL1Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public double AmpereIL1 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class AmpereIL3Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public double AmpereIL3 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class VoltUL1Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public int VoltUL1 { get; set; }
+        [Required]
+        public string UoM { get; set; } = string.Empty;
+    }
+    public class VoltUL2Object
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public int VoltUL2 { get; set; }
         [Required]
         public string UoM { get; set; } = string.Empty;
     }
 
-    public class activePowerQ2Q3Object
+    public class VoltUL3Object
     {
         [Key]
         [Required]
-        public Guid HANId { get; set; }
+        public Guid Id { get; set; }
         [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public double activePowerQ2Q3 { get; set; }
+        public int VoltUL3 { get; set; }
         [Required]
         public string UoM { get; set; } = string.Empty;
     }
 
-    public class reactivePowerQ1Q2Object
+    public class DataContext : DbContext
     {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public double reactivePowerQ1Q2 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
-    }
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+        public virtual DbSet<HANData> HANData { get; set; }
+        public virtual DbSet<ActivePowerQ1Q4Object> ActivePowerQ1Q4 { get; set; }
+        public virtual DbSet<ActivePowerQ2Q3Object> ActivePowerQ2Q3 { get; set; }
+        public virtual DbSet<ReactivePowerQ1Q2Object> ReactivePowerQ2Q3 { get; set; }
+        public virtual DbSet<ReactivePowerQ3Q4Object> ReactivePowerQ3Q4 { get; set; }
+        public virtual DbSet<AmpereIL1Object> AmpereIL1 { get; set; }
+        public virtual DbSet<AmpereIL3Object> AmpereIL3 { get; set; }
+        public virtual DbSet<VoltUL1Object> VoltUL1 { get; set; }
+        public virtual DbSet<VoltUL2Object> VoltUL2 { get; set; }
+        public virtual DbSet<VoltUL3Object> VoltUL3 { get; set; }
 
-    public class reactivePowerQ3Q4Object
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public double reactivePowerQ3Q4 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
-    }
-
-    public class ampereIL1Object
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public double ampereIL1 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
-    }
-
-    public class ampereIL3Object
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public double ampereIL3 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
-    }
-
-    public class voltUL1Object
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public int voltUL1 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
-    }
-
-    public class voltUL2Object
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public int voltUL2 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
-    }
-    public class voltUL3Object
-    {
-        [Key]
-        [Required]
-        public Guid HANId { get; set; }
-        [Required]
-        public HANDataClasses HANDataClasses { get; set; }
-        [Required]
-        public int voltUL3 { get; set; }
-        [Required]
-        public string UoM { get; set; } = string.Empty;
     }
 }
