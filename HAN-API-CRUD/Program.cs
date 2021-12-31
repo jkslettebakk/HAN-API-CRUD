@@ -24,6 +24,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/api/HANData/json", async (DataContext data) => Results.Json(new 
+{ 
+    Message = await data.HANData
+                            .Include(x => x.ActivePowerQ1Q4)
+                            .Include(x => x.ActivePowerQ2Q3)
+                            .Include(x => x.ReactivePowerQ1Q2)
+                            .Include(x => x.ReactivePowerQ3Q4)
+                            .Include(x => x.AmpereIL1)
+                            .Include(x => x.AmpereIL3)
+                            .Include(x => x.VoltUL1)
+                            .Include(x => x.VoltUL2)
+                            .Include(x => x.VoltUL3)
+                            .ToListAsync()
+}));
 
 app.MapGet("/api/HANData", async (DataContext data) =>
 {
@@ -38,7 +52,14 @@ app.MapGet("/api/HANData", async (DataContext data) =>
                             .Include(x => x.VoltUL2)
                             .Include(x => x.VoltUL3)
                             .ToListAsync();
-    return resultList;
+    var options = new JsonSerializerOptions
+    {
+        WriteIndented = true
+    };
+
+    var Json = JsonSerializer.Serialize(resultList, options);
+    return Json;
+    // return resultList;
     //return await data.HANData.ToArrayAsync();
 });
 
@@ -58,7 +79,25 @@ app.MapPost("/api/HANData", async (DataContext data, HANData hanDataSet) =>
 
 app.MapDelete("/api/HANData/Delete/{id}", async (DataContext data, Guid id) =>
 {
-    var RemoveData = await data.HANData.FindAsync(id);
+    // Need to fix a problem where data in child tables does not get delete
+    //
+    var RemoveData = await data.HANData.FindAsync(id); // This gives Data from HAN data table only
+    // var Key1 = await RemoveData.ActivePowerQ1Q4.Id;
+/*
+    var AllObjects = data.HANData
+                           .Include(x => x.ActivePowerQ1Q4)
+                           .Include(x => x.ActivePowerQ2Q3)
+                           .Include(x => x.ReactivePowerQ1Q2)
+                           .Include(x => x.ReactivePowerQ3Q4)
+                           .Include(x => x.AmpereIL1)
+                           .Include(x => x.AmpereIL3)
+                           .Include(x => x.VoltUL1)
+                           .Include(x => x.VoltUL2)
+                           .Include(x => x.VoltUL3);
+                           // .FindAsync(id);
+                           // .FirstOrDefaultAsync(id);
+                           // .ToListAsync();
+*/
 
     if ( RemoveData is HANData hanDataSet)
     {
