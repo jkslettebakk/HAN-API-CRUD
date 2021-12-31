@@ -6,7 +6,7 @@ namespace HAN_API_CRUD.Data
     {
         [Key]
         [Required]
-        public Guid HANId { get; set; }
+        public Guid HANDataId { get; set; }
         [Required]
         public string DateTimePoll { get; set; } = null!;
         [Required]
@@ -139,5 +139,23 @@ namespace HAN_API_CRUD.Data
         public virtual DbSet<VoltUL2Object> VoltUL2 { get; set; }
         public virtual DbSet<VoltUL3Object> VoltUL3 { get; set; }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Add the shadow property to the model
+            /*
+            modelBuilder.Entity<ActivePowerQ1Q4Object>()
+                .Property<Guid>("ForeignHANDataLink_ActivePowerQ1Q4_HANData");
+            */
+            // Use the shadow property as a foreign key
+            /*
+            modelBuilder.Entity<ActivePowerQ1Q4Object>()
+            .HasOne(p => p.HANData)
+            .WithOne(b => b.ActivePowerQ1Q4)
+            .HasForeignKey(p => p.HANDataLink)
+            .HasPrinsipalKey(b => b.HANDataLink)
+            */
+        }
     }
+
 }

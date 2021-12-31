@@ -96,7 +96,7 @@ namespace HAN_API_CRUD.Migrations
 
             modelBuilder.Entity("HAN_API_CRUD.Data.HANData", b =>
                 {
-                    b.Property<Guid>("HANId")
+                    b.Property<Guid>("HANDataId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -143,7 +143,7 @@ namespace HAN_API_CRUD.Migrations
                     b.Property<Guid>("VoltUL3Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("HANId");
+                    b.HasKey("HANDataId");
 
                     b.HasIndex("ActivePowerQ1Q4Id");
 

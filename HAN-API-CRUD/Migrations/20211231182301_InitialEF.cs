@@ -130,7 +130,7 @@ namespace HAN_API_CRUD.Migrations
                 name: "HANData",
                 columns: table => new
                 {
-                    HANId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HANDataId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateTimePoll = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VersionIdentifier = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ModelID = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -147,7 +147,7 @@ namespace HAN_API_CRUD.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HANData", x => x.HANId);
+                    table.PrimaryKey("PK_HANData", x => x.HANDataId);
                     table.ForeignKey(
                         name: "FK_HANData_ActivePowerQ1Q4_ActivePowerQ1Q4Id",
                         column: x => x.ActivePowerQ1Q4Id,

@@ -1,7 +1,5 @@
 
 
-foreach (string a in args)
-    Console.WriteLine("a={0}", a);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,25 +19,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+// Prepere some Json/XML formatting
+var options = new JsonSerializerOptions
+{
+    WriteIndented = true
+};
 
 app.UseHttpsRedirection();
 
-app.MapGet("/api/HANData/json", async (DataContext data) => Results.Json(new 
-{ 
-    Message = await data.HANData
-                            .Include(x => x.ActivePowerQ1Q4)
-                            .Include(x => x.ActivePowerQ2Q3)
-                            .Include(x => x.ReactivePowerQ1Q2)
-                            .Include(x => x.ReactivePowerQ3Q4)
-                            .Include(x => x.AmpereIL1)
-                            .Include(x => x.AmpereIL3)
-                            .Include(x => x.VoltUL1)
-                            .Include(x => x.VoltUL2)
-                            .Include(x => x.VoltUL3)
-                            .ToListAsync()
-}));
-
-app.MapGet("/api/HANData", async (DataContext data) =>
+app.MapGet("/api/HANData/", async (DataContext data) =>
 {
      var resultList = await data.HANData
                             .Include(x => x.ActivePowerQ1Q4)
@@ -52,10 +40,6 @@ app.MapGet("/api/HANData", async (DataContext data) =>
                             .Include(x => x.VoltUL2)
                             .Include(x => x.VoltUL3)
                             .ToListAsync();
-    var options = new JsonSerializerOptions
-    {
-        WriteIndented = true
-    };
 
     var Json = JsonSerializer.Serialize(resultList, options);
     return Json;
@@ -65,7 +49,9 @@ app.MapGet("/api/HANData", async (DataContext data) =>
 
 app.MapGet("/api/HANData/{id}", async (DataContext data, Guid id) =>
 {
-    return await data.HANData.FindAsync(id);
+    var foundRecord = await data.HANData.FindAsync(id);
+    // foundRecord.ActivePowerQ1Q4 = await data.HANData.ActivePowerQ1Q4.FindAsync(id);
+    return foundRecord;
 });
 
 app.MapPost("/api/HANData", async (DataContext data, HANData hanDataSet) =>
@@ -77,7 +63,8 @@ app.MapPost("/api/HANData", async (DataContext data, HANData hanDataSet) =>
     return hanDataSet;
 });
 
-app.MapDelete("/api/HANData/Delete/{id}", async (DataContext data, Guid id) =>
+/*
+ * app.MapDelete("/api/HANData/Delete/{id}", async (DataContext data, Guid id) =>
 {
     // Need to fix a problem where data in child tables does not get delete
     //
@@ -110,5 +97,6 @@ app.MapDelete("/api/HANData/Delete/{id}", async (DataContext data, Guid id) =>
     }
     return Results.NotFound();
 });
+*/
 
 app.Run();

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HAN_API_CRUD.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211230213041_InitialEF")]
+    [Migration("20211231182301_InitialEF")]
     partial class InitialEF
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,7 +98,7 @@ namespace HAN_API_CRUD.Migrations
 
             modelBuilder.Entity("HAN_API_CRUD.Data.HANData", b =>
                 {
-                    b.Property<Guid>("HANId")
+                    b.Property<Guid>("HANDataId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -145,7 +145,7 @@ namespace HAN_API_CRUD.Migrations
                     b.Property<Guid>("VoltUL3Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("HANId");
+                    b.HasKey("HANDataId");
 
                     b.HasIndex("ActivePowerQ1Q4Id");
 
