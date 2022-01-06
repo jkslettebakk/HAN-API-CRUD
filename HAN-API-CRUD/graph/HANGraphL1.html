@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Power overvire - Ospestien 51</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link href="css/site.css" rel="stylesheet" type="text/css">
+
+</head>
+    <body class="main">
+        <section class="main">
+            <section id="IntroTop"></section>
+            <section id="DayDashboard">
+                <section id="filterDay"></section>
+                <section id="chartDay"></section>
+            </section>
+            <div id="IdChartAll"></div>
+        </section>
+
+        <script type="text/javascript">
+
+            // Visualization API with the 'corechart' package.
+            // google.charts.load('visualization', { packages: ['corechart','controls'] });
+            google.charts.load('current', { packages: ['corechart', 'controls'] });
+            google.charts.setOnLoadCallback(drawLineChart);
+            // fixed varibles
+            var dataLogsPerDay = 1800; // Samples visualised pr. hr (estimated )
+            var displayData = 43200; // Viser bare 'displayData' records i graphen
+            var URL = "https://HAN.slettebakk.com/api/List1/number/" + displayData;
+            console.log("Url=", URL)
+
+            function drawLineChart() {
+                $.ajax({
+                    url: URL,
+                    dataType: "json",
+                    type: "GET",
+                    success: function (data) {
+
+
+                        // Input JSON
+                        // ...
+                        // },
+                        // {"dateTimePoll":"2022-01-05T21:35:42.0908603",
+                        // "versionIdentifier": "AIDON_V0001", 
+                        // "modelID": "7359992905478362", 
+                        // "modelType": "6525", 
+                        // "activePowerQ1Q4": 
+                        //    { "activePowerQ1Q4": 1877, 
+                        //      "UoM": "W"
+                        //      }, 
+                        //  "activePowerQ2Q3": 
+                        //    { "activePowerQ2Q3": 0, 
+                        //      "UoM": "W"
+                        //      } 
+                        // },
+                        //  {
+                        //  ...
+
+
+                        // Define the arrayes and assign columns for the chart
+                        var PowerArrayDay = [['DateTimePoll', 'W (Q1Q4)']];
+                        var PowerArrayDisplay = [['DateTimePoll', 'W (Q1Q4)']];
+
+                        // console.log( "Data length:" , data.length, " Date in json", data);
+                        console.log("Outside .ajax. Value content :", data.DateTimePoll, "og har ", data.length, "elementer");
+
+                        // Loop through each data and populate the array.
+                        var n = Math.min(data.length, displayData);
+                        for (var i = 0; i < n; i++) {
+                            PowerArrayDisplay.push([
+                                new Date(data[i].DateTimePoll),
+                                data[i].ActivePowerQ1Q4.ActivePowerQ1Q4
+                            ]);
+                        };
+
+                        console.log( "Data length:" ,PowerArrayDisplay.length, "Data content:" , PowerArrayDisplay);
+
+
+                        // Copy PowerArrayDisplay to a shorter table (day view)
+                        var n = Math.min(dataLogsPerDay, PowerArrayDisplay.length);
+                        for (var i = 1; i < n; i++) {
+                            // console.log("Records [",data.length-n+i,"] :", data[data.length-n+i-1].timeStamp, data[data.length-n+i-1].temperature);
+                            PowerArrayDay.push(PowerArrayDisplay[i]);
+                        };
+
+                        console.log( "DataDay length:" ,PowerArrayDay.length, "Data content:" , PowerArrayDay);
+
+                        var first = new Date(PowerArrayDay[1][0]).getTime();
+                        var last = new Date(PowerArrayDay[PowerArrayDay.length - 1][0]).getTime();
+                        var dayHoursDiff = Math.floor((first - last) / (1000 * 60 * 60) % 24);
+                        var dayMinutesDiff = Math.floor((first - last) / (1000 * 60) % 60);
+
+                        console.log("First =", first);
+                        console.log("Last =", last);
+                        console.log (" timer =", dayHoursDiff, " Minutter=", dayMinutesDiff)
+
+                        var first = new Date(PowerArrayDisplay[1][0]).getTime()
+                        var last = new Date(PowerArrayDisplay[PowerArrayDisplay.length - 1][0]).getTime()
+
+                        var diffInSeconds = Math.abs(first - last) / 1000;
+                        var displayDays = Math.floor(diffInSeconds / 60 / 60 / 24);
+                        var displayHours = Math.floor(diffInSeconds / 60 / 60 % 24);
+                        var displayMinutes = Math.floor(diffInSeconds / 60 % 60);
+
+                        // PowerArrayDisplay
+
+                        console.log("Outside .ajax. Number of elements :", data.length);
+                        console.log("\nPowerArrayDisplay i .ajax :\n",PowerArrayDisplay);
+                        console.log("\nPowerArrayDay i .ajax :\n",PowerArrayDay);
+
+                        // Set chart Options.
+                        var drawTemperatureAllOption = {
+                            title: 'Energy overview (all registered)',
+                            chartType: 'LineChart',
+                            curveType: 'function',
+                            containerId: 'IdChartAll',
+                            dataTable: PowerArrayDisplay,
+                            width: '100%',
+                            height: '100%',
+                            legend: {
+                                position: 'bottom',
+                                textStyle: {
+                                    color: '#555',
+                                    fontSize: 12
+                                }
+                            },  // You can position the legend on 'top' or at the 'bottom'.
+                            lineWidth: 0.6,
+                            title: 'Long report (around ' + displayDays + '  days and ' + displayHours + ' hrs) overview.',
+                            lineText: 'value',
+                            hAxis: {
+                                format: 'yyyy/M/d\nHH:mm',
+                                textStyle: { color: '#555', fontSize: 12 }
+                            }
+                        };
+
+                        // Create a range slider, passing some options
+                        var optionsDaySlider = new google.visualization.ControlWrapper({
+                            controlType: 'DateRangeFilter',
+                            containerId: 'filterDay',
+                            fontSize: 12,
+                            options: {
+                                title: 'Date filter',
+                                textStyle: { color: '#555', fontSize: 12 },
+                                filterColumnLabel: 'DateTimePoll',
+                                ui: {
+                                    label: 'Date/time',
+                                    format: {
+                                        pattern: 'HH:mm' // 'M/d hh:mm'
+                                    },
+                                    step: 'minutes'
+                                }
+                            }
+                        });
+
+                        // Create a line chart, passing some options
+                        var drawDayLineChartOptions = new google.visualization.ChartWrapper({
+                            chartType: 'LineChart',
+                            curveType: 'function',
+                            containerId: 'chartDay',
+                            dataTable: PowerArrayDay,
+                            options: {
+                                title: 'Short data overview (around ' + dayHoursDiff + '  hrs and ' + dayMinutesDiff + ' minutes) with slider.',
+                                width: '100%',
+                                height: '100%',
+                                lineText: 'value',
+                                lineWidth: 1,
+                                legend: {
+                                    position: 'bottom',
+                                    textStyle: {
+                                        color: '#555',
+                                        fontSize: 12
+                                    }
+                                },  // You can position the legend on 'top' or at the 'bottom'.
+                                hAxis: {
+                                    format: 'HH:mm',
+                                    textStyle: {
+                                        color: '#555',
+                                        fontSize: 12
+                                    }
+                                    // formatType: 'short'
+                                },
+                            }
+                        });
+
+                        // Create DataTable and add the array to it.
+                        var EnergyDisplay = google.visualization.arrayToDataTable(PowerArrayDisplay)
+                        console.log("EnergyDisplay :",EnergyDay)
+                        var EnergyDay = google.visualization.arrayToDataTable(PowerArrayDay)
+
+                        // Date formatting
+                        var dateFormatterDay = new google.visualization.DateFormat({
+                            formatType: 'short',
+                            pattern: 'HH:mm:ss'
+                        });
+                        var dateFormatterAll = new google.visualization.DateFormat({
+                            formatType: 'long',
+                            pattern: 'YYYY/MM/dd HH:mm:ss'
+                        });
+
+                        dateFormatterDay.format(EnergyDay, 0);
+                        dateFormatterAll.format(EnergyDisplay, 0);
+
+                        // Create a 'Day' dashboard.
+                        var dayDashboard = new google.visualization.Dashboard(document.getElementById('dayDashboard'));
+
+                        // console.log("\nEnergyDay :\n",EnergyDay);
+
+                        dayDashboard.bind(optionsDaySlider, drawDayLineChartOptions);
+
+                        // Draw the dashboard.
+                        dayDashboard.draw(EnergyDay, drawDayLineChartOptions);
+
+                        // Define the chart type (LineChart) and the container (a DIV in our case).
+                        var allDataChart = new google.visualization.LineChart(document.getElementById('IdChartAll'));
+
+                        allDataChart.draw(EnergyDisplay, drawTemperatureAllOption);      // Draw the chart with Options.
+
+                        var dataBaseAlive = '<status style="position: relative; left: 80%;"><span id="IntroTop" class="dotGreen"></span>Database</status>';
+                        var raspberryAlive = '<status style="position: relative; left: 82%;"><span  id="IntroTop" class="dotGreen"></span>Raspberry</status>';
+
+                        // Indicate helth of database access
+                        if (data.length < 1) dataBaseAlive = dataBaseAlive = '<status style="position: relative; left: 80%;"><span id="IntroTop" class="dotRead"></span>Database</status>'; // database dead?
+                        // indicate helth of raspberry
+                        var lastPollInMs = Date.parse(EnergyDisplay.getValue(1, 0));
+                        // 1 dag i ms = 24*60*60*1000 = 86400000, 1 time i ms = 1*60*60*1000 = 3600000
+                        var onerHrInMs = 1 * 60 * 60 * 1000;
+                        var currentTimeInMs = new Date().getTime();
+                        var currentTimeMinusOneHrInMs = (currentTimeInMs - onerHrInMs); // 60 minutes delay in data reporting
+                        var diffInMs = lastPollInMs - currentTimeMinusOneHrInMs
+                        // console.log("lastPollInMs (database) =",lastPollInMs,"\nCurrent time (currentTimeInMs) = ",currentTimeInMs,"\n Diff in ms= ",diffInMs)
+                        var h = Math.floor(diffInMs / 1000 / 60 / 60);
+                        var m = Math.floor((diffInMs / 1000 / 60 / 60 - h) * 60);
+                        var diffInMsTime = h.toString() + ":" + m.toString() + ":" + Math.floor(((diffInMs / 1000 / 60 / 60 - h) * 60 - m) * 60)
+                        console.log("lastPollInMs =", Date(lastPollInMs), "\ncurrentTimeMinusOneHr =", Date(currentTimeMinusOneHrInMs), "\nDiff =", diffInMs, "(", diffInMsTime, ")");
+                        if (lastPollInMs < currentTimeMinusOneHrInMs) raspberryAlive = '<status style="position: relative; left: 82%;"><span  id="IntroTop" class="dotRead"></span>Raspberry</status>'; // pi dead or python stopped?
+
+                        document.getElementById("IntroTop").innerHTML = dataBaseAlive + raspberryAlive;
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Got an Error:', XMLHttpRequest);
+                        // console.log('Got an Error:\n',XMLHttpRequest,"\nStatus :",textStatus,"\nError thrown :",errorThrown );
+                    }
+
+                });
+
+            }
+
+        </script>
+
+    </body>
+</html>
